@@ -1,0 +1,85 @@
+
+ABOUT
+
+CrossTalkZ is a tool for the statistical analysis of cross-talk between groups (e.g. pathways) 
+as evidenced by a given network's topology. This file has information about building and using this tool.
+
+BUILDING
+
+The CrossTalkZ tool only requires two components of the BOOST (http://www.boost.org/) C++ library, 
+libxml2, a standard c++ compiler and cmake. One can obtain the source code for the boost from the 
+website, however most Unix based platforms have installation packages. libxml2 and cmake are already 
+installed on most unix systems. If you have boost (>= 1.45), libxml2 and cmake installed skip to the 
+next section.
+
+LINUX INSTRUCTIONS:
+Using your favorite package installation technique, search for and install 
+the current version of:
+	libboost-graph or just boost-graph
+	libboost-program_options or just boost-program_options
+	libxml2 or just xml2 development version (-dev)
+	cmake
+Also installing any required packages. 
+
+
+MAC INSTRUCTIONS:
+The easiest way to install boost on a mac is to use macports.
+http://www.macports.org/
+Once it is installed execute the following commands:
+sudo port selfupdate
+sudo port install boost
+sudo port install libxml2
+sudo port install cmake
+
+Source instructions for boost:
+If you wish to install boost from source, which should work for most platforms
+an installation HOWTO can be found here:
+http://ubuntuforums.org/showthread.php?t=1180792
+
+The only thing that is ubuntu specific in that HOTO is ensuring that 
+the required build environment (gcc, libc, etc) is installed.  
+
+SBC MODULE:
+To add the CrossTalkZ module on the sbc pdc cluster type the following commands:
+export MODULEPATH=$MODULEPATH:/afs/pdc.kth.se/projects/sbc/modules/system/
+module add i-compilers/11.1 openmpi
+module add crosstalkz
+
+To add the CrossTalkZ module on a personal computer following commands:
+export MODULEPATH=$MODULEPATH:/afs/pdc.kth.se/projects/sbc/modules/system/
+module add crosstalkz
+
+COMPILATION
+
+This project uses cmake to configure and generate a Makefile.
+To configure cmake, edit src/CMakeLists.txt
+Find set command for CMAKE_CXX_COMPILER and change to your compiler of choice. e.g. "g++" for Gcc
+ 
+Then, in the CrossTalkZ root directory, you should be able to simply run the following two commands:
+
+cmake src/
+make
+
+If errors are generated, most likely either the boost library or libxml2 
+were not found or are not installed properly on the system.
+
+EXECUTION
+
+The tool has two required parameters and some other options. To view these run the 
+program without any parameters.
+
+The NETWORK_FILE is a network file that can have one of three formats:
+1) XGMML file format
+2) Tab separated file of the form: 
+PROTEIN1	PROTEIN2	[optional edge weight to compare with cutoff]
+If no edge weight is provided then a link between PROTEIN1 and PROTEIN2 is in the network.
+3) Unabridged tab separated FunCoup file.
+
+The GROUPS_FILE is currently a tab separated file containing the following columns:
+[] denote optional columns
+GENE	GROUP	[USER_SPECIFIED]
+ 
+
+
+
+
