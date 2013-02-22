@@ -1,4 +1,3 @@
-
 ABOUT
 
 CrossTalkZ is a tool for the statistical analysis of cross-talk between groups (e.g. pathways) 
@@ -80,6 +79,10 @@ The GROUPS_FILE is currently a tab separated file containing the following colum
 GENE	GROUP	[USER_SPECIFIED]
  
 
+CITATION
 
+If you use this program for a published work please use the following citation:
+
+McCormack T, Frings O, Alexeyenko A, Sonnhammer ELL (2013) Statistical Assessment of Crosstalk Enrichment between Gene Groups in Biological Networks. PLoS ONE 8(1): e54945. doi:10.1371/journal.pone.0054945
 
 
