@@ -1,11 +1,25 @@
 /*
+CrossTalkZ - Statistical tool to assess crosstalk enrichment between node groupings in a network.
+Copyright (C) 2013  Ted McCormack
 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Contents:
 This file contains BoostGraphIO class declaration that is used to load
 and write networks. It allows the user to easily load XGMML, 
 simple TSV, and funcoup TSV graphs. It currently only writes 
 simple TSV graphs. 
-
-Written by Ted McCormack.
 
 */
 
