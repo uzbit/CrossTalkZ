@@ -93,7 +93,7 @@ bool keyInMap(const T1 &k, const map<T1, T2 > &m)
 
 long double calculatePvalueFromZscore(long double x)
 {
-	return (long double)erfcl(fabsl(x)/M_SQRT2);
+	return erfcl(fabsl(x)/M_SQRT2);
 }
 
 template <class T>
@@ -225,12 +225,11 @@ void readGeneGroups(const Graph &origNet, vector<GeneGroup> &groups, map<string,
 	}
 	file.close();
 			
-	int totalGroups = groups.size();
-	
 	//remove groups from the list that do not meet some requirements
 	for (int i = 0; i < (int)groups.size();)
-		if ((int)groups[i].groupGenes.size() < minimumGenesForGroup)
+		if ((int)groups[i].groupGenes.size() < minimumGenesForGroup) //this is the requirement to remove
 		{
+			//also need to remove all occurances from the geneGroup Map
 			for (map<string, vector<string> >::iterator it = geneGroupMap.begin(); it != geneGroupMap.end(); it++)
 				for (int j = 0; j < (int)it->second.size();)
 					if (it->second[j] == groups[i].groupId)
@@ -247,29 +246,28 @@ void readGeneGroups(const Graph &origNet, vector<GeneGroup> &groups, map<string,
 		else
 			i++;
 		
-	sort(groups.begin(), groups.end(), groupSort);
-	
 	if (!groups.size())
 	{
 		cout << "There were no valid groups loaded. Verify group file format and existence in network." << endl;
 		exit(1);
 	}
 
-//#if VERBOSE
+	sort(groups.begin(), groups.end(), groupSort);
+
+
 	map<string, bool> testUnique;
 	for (int i = 0; i < (int)groups.size(); i++)
 	for (int j = 0; j < (int)groups[i].groupGenes.size(); j++)
 		if(!keyInMap(groups[i].groupGenes[j], testUnique))
 			testUnique[groups[i].groupGenes[j]] = true;
 
-	ss << "Total number of groups input: " << totalGroups << endl;
+	ss << "Total number of groups input: " << groups.size() << endl;
 	ss << "Total number of unique genes in the set of groups: " << totalGenesInput.size() << endl;
 	ss << "Number of groups with at least " << minimumGenesForGroup << " gene members (final number of groups): " << groups.size() << endl;
 	ss << "Number of unique group genes not found in the network: " << countNotInNetwork.size() << endl;
 	ss << "Number of unique genes in the set of groups and in the network: "<< testUnique.size() << endl;
 
-//#endif
-	
+#if VERBOSE	
 /*	For degree distribution:
 	map <int, int> degHist;
 	for (Graph::node_range_t vr = origNet.getNodes(); vr.first != vr.second; vr.first++)
@@ -291,6 +289,8 @@ void readGeneGroups(const Graph &origNet, vector<GeneGroup> &groups, map<string,
 			cout <<"\t"<< groups[i].groupGenes[j] << endl;
 	}
 	cout << groups[groups.size()-1].groupGenes.size() << "<< size\n";*/
+#endif
+
 }
 
 
