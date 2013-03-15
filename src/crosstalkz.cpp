@@ -224,7 +224,9 @@ void readGeneGroups(const Graph &origNet, vector<GeneGroup> &groups, map<string,
 			countNotInNetwork[currentGeneID] = true;
 	}
 	file.close();
-			
+	
+	int totalGroups =  (int)groups.size();
+	
 	//remove groups from the list that do not meet some requirements
 	for (int i = 0; i < (int)groups.size();)
 		if ((int)groups[i].groupGenes.size() < minimumGenesForGroup) //this is the requirement to remove
@@ -261,7 +263,7 @@ void readGeneGroups(const Graph &origNet, vector<GeneGroup> &groups, map<string,
 		if(!keyInMap(groups[i].groupGenes[j], testUnique))
 			testUnique[groups[i].groupGenes[j]] = true;
 
-	ss << "Total number of groups input: " << groups.size() << endl;
+	ss << "Total number of groups input: " << totalGroups << endl;
 	ss << "Total number of unique genes in the set of groups: " << totalGenesInput.size() << endl;
 	ss << "Number of groups with at least " << minimumGenesForGroup << " gene members (final number of groups): " << groups.size() << endl;
 	ss << "Number of unique group genes not found in the network: " << countNotInNetwork.size() << endl;
