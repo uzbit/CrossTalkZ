@@ -75,6 +75,7 @@ long double nCk(int n, int k){
 			ret *= (n-(k-i))/(i+0.0);
 	return ret;
 }
+
 long double pHyper(int n, int m, int k, int N){
 	return nCk(m, k)*nCk(N-m, n-k)/nCk(N,n);
 }
@@ -103,12 +104,27 @@ float calculateReducedChiSquare(vector<T> &dataSet, const float mean, const floa
 
 bool groupSort(const GeneGroup& g1, const GeneGroup& g2)
 {
-  return g1.groupId < g2.groupId;
+  return (g1.groupId < g2.groupId);
 }
 
 bool pValueSort(const pair<string, float> &p1, const pair<string, float> &p2)
 {
   return (p1.second < p2.second);
+}
+
+void writeLog(const Graph &origNet, const Graph &randNet){
+	long long s1 = calculateSmetricNetwork(randNet);
+	long long s2 = calculateSmetricNetwork(origNet);
+	cout << "Random network s-metric = " << s1 << endl;
+	cout << "Original network s-metric = " << s2 << endl;
+	cout << "Ratio random/original s-metric = " << (double)(s1)/(double)(s2) << endl;
+	float r1 = calculateRfromNetwork(randNet);
+	float r2 = calculateRfromNetwork(origNet);
+	rVals.push_back(r1);
+	smetricRatio.push_back((double)s1/(double)s2);
+	cout << "\nRandom network r-metric = " << r1 << endl;
+	cout << "Original network r-metric = " << r2 << endl;
+	cout << "Ratio random/original r-metric = " << (double)(r1)/(double)(r2) << endl;
 }
 
 //validateConnectivities:
@@ -314,7 +330,6 @@ int generateRandomNetworkLinkSwap(const Graph &origNet, Graph &randNet)
 	
 	while(hasTested.size()/2 <= links.size() && links.size() >= 2)
 	{
-		//hasTested.clear();
 		do
 		{
 			randIndex1 = rand()%links.size();
@@ -378,19 +393,8 @@ int generateRandomNetworkLinkSwap(const Graph &origNet, Graph &randNet)
 		printf("Conserved connectivity.\n");
 	else
 		printf("Failed to conserve connectivity.\n");
-
-	long long s1 = calculateSmetricNetwork(randNet);
-	long long s2 = calculateSmetricNetwork(origNet);
-	cout << "Random network s-metric = " << s1 << endl;
-	cout << "Original network s-metric = " << s2 << endl;
-	cout << "Ratio random/original s-metric = " << (double)(s1)/(double)(s2) << endl;
-	float r1 = calculateRfromNetwork(randNet);
-	float r2 = calculateRfromNetwork(origNet);
-	rVals.push_back(r1);
-	smetricRatio.push_back((double)s1/(double)s2);
-	cout << "\nRandom network r-metric = " << r1 << endl;
-	cout << "Original network r-metric = " << r2 << endl;
-	cout << "Ratio random/original r-metric = " << (double)(r1)/(double)(r2) << endl;
+	
+	writeLog(origNet, randNet);
 #endif
 	
 	return 2*countSwaps;
@@ -428,18 +432,7 @@ bool generateRandomNetworkLabelSwap(const Graph &origNet, Graph &randNet, map<in
 	}
 
 #if VERBOSE
-	long long s1 = calculateSmetricNetwork(randNet);
-	long long s2 = calculateSmetricNetwork(origNet);
-	cout << "Random network s-metric = " << s1 << endl;
-	cout << "Original network s-metric = " << s2 << endl;
-	cout << "Ratio random/original s-metric = " << (double)(s1)/(double)(s2) << endl;
-	float r1 = calculateRfromNetwork(randNet);
-	float r2 = calculateRfromNetwork(origNet);
-	rVals.push_back(r1);
-	smetricRatio.push_back((double)s1/(double)s2);
-	cout << "\nRandom network r-metric = " << r1 << endl;
-	cout << "Original network r-metric = " << r2 << endl;
-	cout << "Ratio random/original r-metric = " << (double)(r1)/(double)(r2) << endl;
+	writeLog(origNet, randNet);
 #endif
 	
 	return true;	
@@ -554,18 +547,7 @@ bool generateRandomNetworkSecondOrder(const Graph &origNet, Graph &randNet, map<
 	{
 
 #if VERBOSE
-	  	long long s1 = calculateSmetricNetwork(randNet);
-		long long s2 = calculateSmetricNetwork(origNet);
-		cout << "Random network s-metric = " << s1 << endl;
-		cout << "Original network s-metric = " << s2 << endl;
-		cout << "Ratio random/original s-metric = " << (double)(s1)/(double)(s2) << endl;
-		float r1 = calculateRfromNetwork(randNet);
-		float r2 = calculateRfromNetwork(origNet);
-		rVals.push_back(r1);
-		smetricRatio.push_back((double)s1/(double)s2);
-		cout << "\nRandom network r-metric = " << r1 << endl;
-		cout << "Original network r-metric = " << r2 << endl;
-		cout << "Ratio random/original r-metric = " << (double)(r1)/(double)(r2) << endl;
+		writeLog(origNet, randNet);
 #endif
 		return true;
 	}
@@ -699,25 +681,15 @@ bool generateRandomNetworkAssignment(const Graph &origNet, Graph &randNet)
 	if (validateConnectivities(origNet, randNet, errors))
 	{
 #if VERBOSE
-  		long long s1 = calculateSmetricNetwork(randNet);
-		long long s2 = calculateSmetricNetwork(origNet);
-		cout << "Random network s-metric = " << s1 << endl;
-		cout << "Original network s-metric = " << s2 << endl;
-		cout << "Ratio random/original s-metric = " << (double)(s1)/(double)(s2) << endl;
-		float r1 = calculateRfromNetwork(randNet);
-		float r2 = calculateRfromNetwork(origNet);
-		rVals.push_back(r1);
-		smetricRatio.push_back((double)s1/(double)s2);
-		cout << "\nRandom network r-metric = " << r1 << endl;
-		cout << "Original network r-metric = " << r2 << endl;
-		cout << "Ratio random/original r-metric = " << (double)(r1)/(double)(r2) << endl;
+		writeLog(origNet, randNet);
 #endif
 		return true;
 	}
 	
 #if DEBUG
 	for (int i = 0; i < (int)errors.size(); i++)
-		printf("error %d has %d in orig and %d in rand\n", i, origNet.getNodeDegree(errors[i].first), randNet.getNodeDegree(errors[i].second));
+		printf("error %d has %d in orig and %d in rand\n", i, 
+			origNet.getNodeDegree(errors[i].first), randNet.getNodeDegree(errors[i].second));
 #endif
 
 	int sum = 0;
@@ -730,7 +702,8 @@ bool generateRandomNetworkAssignment(const Graph &origNet, Graph &randNet)
 }
 
 
-void fixConnectivityErrors(const Graph &origNet, Graph &randNet, vector<pair<Graph::Node, Graph::Node> > &errors)
+void fixConnectivityErrors(const Graph &origNet, Graph &randNet, 
+				vector<pair<Graph::Node, Graph::Node> > &errors)
 {
 	int numToGo;
 	Graph::Node v1=NULL, v2=NULL;
@@ -848,7 +821,8 @@ void fixConnectivityErrors(const Graph &origNet, Graph &randNet, vector<pair<Gra
 
 }
 
-bool validateConnectivities(const Graph &origNet, const Graph &randNet, vector<pair<Graph::Node, Graph::Node> > &errors)
+bool validateConnectivities(const Graph &origNet, const Graph &randNet, 
+				vector<pair<Graph::Node, Graph::Node> > &errors)
 {
 	bool valid = true;
 	Graph::Node v1, v2;
@@ -941,9 +915,9 @@ bool getTest(vector<string> *ggmp1, const string &g1, const int &p1s, vector<str
 
 
 void countLinksForGroupsAll(Graph &randNet,
-								vector<GeneGroup> &groups,
-								map<string, Stats > &groupStats,
-								map<string, vector<string> > &geneGroupMap) 
+				vector<GeneGroup> &groups,
+				map<string, Stats > &groupStats,
+				map<string, vector<string> > &geneGroupMap) 
 {
 	Graph::Node v1, v2;
 	string groupsVsStr, p1, p2, g1, g2;
@@ -1282,20 +1256,19 @@ void calculateAndWriteResultsAll(Graph &origNet,
 				break;
 			}	 
 
-		//file.setf(ios::scientific);
 		file.precision(6);
 		file	<< groupsVsStr << "\t" 
-				<< groups[i].groupSys <<" "<< groups[i].groupSys << "\t" 
-				<< "intra" << "\t"
-				<< (int)thisGroupStats->observedLinks << "\t"
-				<< thisGroupStats->expectedLinks << "\t" 
-				<< ((testValid)?lexical_cast<string>((float)thisGroupStats->zScore):"NA") << "\t"
-				<< ((testValid)?lexical_cast<string>(thisGroupStats->pValue):"NA") << "\t"
-				<< ((testValid)?lexical_cast<string>((float)fdr):"NA") << "\t"
-				<< ((testValid)?lexical_cast<string>((float)thisGroupStats->stdDev):"NA") << "\t"
-				<< thisGroupStats->chiSqr << "\t"
-				<< ((testValid)?(doHyper?lexical_cast<string>(pHyper(nDraws[groupsVsStr], mSuccesses[groupsVsStr], kSuccess[groupsVsStr], N)):""):"NA")<< "\t"	
-				<< endl;
+			<< groups[i].groupSys <<" "<< groups[i].groupSys << "\t" 
+			<< "intra" << "\t"
+			<< (int)thisGroupStats->observedLinks << "\t"
+			<< thisGroupStats->expectedLinks << "\t" 
+			<< ((testValid)?lexical_cast<string>((float)thisGroupStats->zScore):"NA") << "\t"
+			<< ((testValid)?lexical_cast<string>(thisGroupStats->pValue):"NA") << "\t"
+			<< ((testValid)?lexical_cast<string>((float)fdr):"NA") << "\t"
+			<< ((testValid)?lexical_cast<string>((float)thisGroupStats->stdDev):"NA") << "\t"
+			<< thisGroupStats->chiSqr << "\t"
+			<< ((testValid)?(doHyper?lexical_cast<string>(pHyper(nDraws[groupsVsStr], mSuccesses[groupsVsStr], kSuccess[groupsVsStr], N)):""):"NA")<< "\t"	
+			<< endl;
 					
 	}
 
@@ -1323,20 +1296,19 @@ void calculateAndWriteResultsAll(Graph &origNet,
 					break;
 				}	 
 			
-			//file.setf(ios::scientific);
 			file.precision(6);
 			file	<< groupsVsStr << "\t" 
-					<< groups[i].groupSys <<" "<< groups[i].groupSys << "\t" 
-					<< "inter" << "\t"
-					<< (int)thisGroupStats->observedLinks << "\t"
-					<< thisGroupStats->expectedLinks << "\t" 
-					<< ((testValid)?lexical_cast<string>((float)thisGroupStats->zScore):"NA") << "\t"
-					<< ((testValid)?lexical_cast<string>(thisGroupStats->pValue):"NA") << "\t"
-					<< ((testValid)?lexical_cast<string>((float)fdr):"NA") << "\t"	
-					<< ((testValid)?lexical_cast<string>((float)thisGroupStats->stdDev):"NA") << "\t"
-					<< thisGroupStats->chiSqr << "\t"
-					<< ((testValid)?(doHyper?lexical_cast<string>(pHyper(nDraws[groupsVsStr], mSuccesses[groupsVsStr], kSuccess[groupsVsStr], N)):""):"NA")<< "\t"
-					<< endl;
+				<< groups[i].groupSys <<" "<< groups[i].groupSys << "\t" 
+				<< "inter" << "\t"
+				<< (int)thisGroupStats->observedLinks << "\t"
+				<< thisGroupStats->expectedLinks << "\t" 
+				<< ((testValid)?lexical_cast<string>((float)thisGroupStats->zScore):"NA") << "\t"
+				<< ((testValid)?lexical_cast<string>(thisGroupStats->pValue):"NA") << "\t"
+				<< ((testValid)?lexical_cast<string>((float)fdr):"NA") << "\t"	
+				<< ((testValid)?lexical_cast<string>((float)thisGroupStats->stdDev):"NA") << "\t"
+				<< thisGroupStats->chiSqr << "\t"
+				<< ((testValid)?(doHyper?lexical_cast<string>(pHyper(nDraws[groupsVsStr], mSuccesses[groupsVsStr], kSuccess[groupsVsStr], N)):""):"NA")<< "\t"
+				<< endl;
 		}
 	}
 	
@@ -1397,7 +1369,7 @@ void calculateAndWriteResults12(Graph &origNet,
 			gss = (int)gsm->size();
 			
 			for (int c = 0; c < gss; c++)
-				(*gsm)[c] *= ((g1==g2)?0.5:1.0); //links between same groups counted twice (kinda a hack, should just count properly)
+				(*gsm)[c] *= ((g1==g2)?0.5:1.0); //links between same groups counted twice 
 			
 			calcStatFromVec((*gsm), gss, NexpectedLinks, stdDev);
 			
@@ -1485,33 +1457,33 @@ void calculateAndWriteResults12(Graph &origNet,
 				
 				file.precision(6);
 				file	<< groupsVsStr << "\t" 
-						<< groups1[i].groupSys <<" "<< groups2[j].groupSys << "\t" 
-						<< ((groups1[i].groupId == groups2[j].groupId)?"intra":"inter")<< "\t"					
-						<< (int)thisGroupStats->observedLinks << "\t"
-						<< thisGroupStats->expectedLinks << "\t" 
-						<< thisGroupStats->zScore << "\t"
-						<< thisGroupStats->pValue << "\t"
-						<< fdr << "\t"
-						<< thisGroupStats->stdDev << "\t"
-						<< thisGroupStats->chiSqr << "\t"
-						<< ((doHyper)?lexical_cast<string>(pHyper(nDraws[groupsVsStr], mSuccesses[groupsVsStr], kSuccess[groupsVsStr], N)):"")<< "\t"
-						<< endl;
+					<< groups1[i].groupSys <<" "<< groups2[j].groupSys << "\t" 
+					<< ((groups1[i].groupId == groups2[j].groupId)?"intra":"inter")<< "\t"					
+					<< (int)thisGroupStats->observedLinks << "\t"
+					<< thisGroupStats->expectedLinks << "\t" 
+					<< thisGroupStats->zScore << "\t"
+					<< thisGroupStats->pValue << "\t"
+					<< fdr << "\t"
+					<< thisGroupStats->stdDev << "\t"
+					<< thisGroupStats->chiSqr << "\t"
+					<< ((doHyper)?lexical_cast<string>(pHyper(nDraws[groupsVsStr], mSuccesses[groupsVsStr], kSuccess[groupsVsStr], N)):"")<< "\t"
+					<< endl;
 	
 			}
 			else
 			{
 				file	<< groupsVsStr << "\t" 
-						<< groups1[i].groupSys <<" "<< groups2[j].groupSys << "\t" 
-						<< ((groups1[i].groupId == groups2[j].groupId)?"intra":"inter")<< "\t"
-						<< (int)thisGroupStats->observedLinks << "\t"
-						<< thisGroupStats->expectedLinks << "\t" 
-						<< "NA" << "\t"
-						<< "NA" << "\t"
-						<< "NA" << "\t"
-						<< "NA" << "\t"
-						<< "NA" << "\t"
-						<< ((doHyper)?"NA":"") << "\t"
-						<< endl;
+					<< groups1[i].groupSys <<" "<< groups2[j].groupSys << "\t" 
+					<< ((groups1[i].groupId == groups2[j].groupId)?"intra":"inter")<< "\t"
+					<< (int)thisGroupStats->observedLinks << "\t"
+					<< thisGroupStats->expectedLinks << "\t" 
+					<< "NA" << "\t"
+					<< "NA" << "\t"
+					<< "NA" << "\t"
+					<< "NA" << "\t"
+					<< "NA" << "\t"
+					<< ((doHyper)?"NA":"") << "\t"
+					<< endl;
 			}
 		}
 	}
@@ -1587,8 +1559,6 @@ void generateMaps(Graph &origNet,
 
 Graph::Node getNodeById(const Graph &g, const string &Id)
 {
-	//for (Graph::node_range_t vp = g.getNodes(); vp.first != vp.second; vp.first++)
-	//	if (g.properties(*vp.first).geneId == Id)
 	if (!keyInMap(Id, geneVertMap))
 		return NULL;
 	return (geneVertMap[Id][g.id]);
