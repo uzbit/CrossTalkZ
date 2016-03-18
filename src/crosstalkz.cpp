@@ -61,10 +61,8 @@ float minExpLinks = 0.3;	//not used
 #define MIN(a,b) ((a<b)?a:b)
 #define MAX(a,b) ((a>b)?a:b)
 
-#if VERBOSE
 vector<float> rVals;
 vector<float> smetricRatio;
-#endif
 
 /****************UTILITIY FUNCTIONS****************/
 
@@ -1156,9 +1154,9 @@ void calculateAndWriteResultsAll(Graph &origNet,
 				thisGroupStats->chiSqr = calculateReducedChiSquare((*gsm), NexpectedLinks, stdDev);
 
 				if (i == j)
-				  sortedPValuesIntra.push_back(pair<string, float>(groupsVsStr, thisGroupStats->pValue));
+				  sortedPValuesIntra.push_back(pair<string, long double>(groupsVsStr, thisGroupStats->pValue));
 				else
-				  sortedPValuesInter.push_back(pair<string, float>(groupsVsStr, thisGroupStats->pValue)); 
+				  sortedPValuesInter.push_back(pair<string, long double>(groupsVsStr, thisGroupStats->pValue)); 
 			}
 			
 			/*
@@ -1181,9 +1179,9 @@ void calculateAndWriteResultsAll(Graph &origNet,
 					stdsCC[groupsVsStr] = stdDevCC;
 					
 					if (i == j)
-					  sortedPValuesIntra.push_back(pair<string, float>(groupsVsStr, pValues[groupsVsStr]));
+					  sortedPValuesIntra.push_back(pair<string, long double>(groupsVsStr, pValues[groupsVsStr]));
 					else
-					  sortedPValuesInter.push_back(pair<string, float>(groupsVsStr, pValues[groupsVsStr])); 
+					  sortedPValuesInter.push_back(pair<string, long double>(groupsVsStr, pValues[groupsVsStr])); 
 				}
 			}*/
 			
@@ -1193,18 +1191,23 @@ void calculateAndWriteResultsAll(Graph &origNet,
 	sort(sortedPValuesIntra.begin(), sortedPValuesIntra.end(), pValueSort);
 	sort(sortedPValuesInter.begin(), sortedPValuesInter.end(), pValueSort);
 	
-	for (int c = 1; c < (int)sortedPValuesIntra.size(); c++)
+	// Benjamini-Hochberg FDR p-value adjustment
+	// Note that this was inverted and buggy; fixed in version 1.4.
+	for (int c = 0; c < (int)sortedPValuesIntra.size(); c++)
 	{
-		sortedPValuesIntra[c].second *= sortedPValuesIntra.size()/(sortedPValuesIntra.size() - c+0.0);
+	  //double old = sortedPValuesIntra[c].second;
+		sortedPValuesIntra[c].second *= sortedPValuesIntra.size()/(c+1.0);
 		if (sortedPValuesIntra[c].second > 1.0)
 			sortedPValuesIntra[c].second = 1.0;
+		//cout << "Adjusting intra "<< old << " by " << sortedPValuesIntra.size()/(c+1.0) << " to " << sortedPValuesIntra[c].second << endl;
 	}	 
-	
-	for (int c = 1; c < (int)sortedPValuesInter.size(); c++)
+	for (int c = 0; c < (int)sortedPValuesInter.size(); c++)
 	{
-		sortedPValuesInter[c].second *= sortedPValuesInter.size()/(sortedPValuesInter.size() - c+0.0);
+	  //double old = sortedPValuesInter[c].second;
+		sortedPValuesInter[c].second *= sortedPValuesInter.size()/(c+1.0);
 		if (sortedPValuesInter[c].second > 1.0)
 			sortedPValuesInter[c].second = 1.0;
+		//cout << "Adjusting inter "<< old << " to " << sortedPValuesInter[c].second << endl;
 	}
 	
 	if (doHyper){
@@ -1264,8 +1267,8 @@ void calculateAndWriteResultsAll(Graph &origNet,
 			<< thisGroupStats->expectedLinks << "\t" 
 			<< ((testValid)?lexical_cast<string>((float)thisGroupStats->zScore):"NA") << "\t"
 			<< ((testValid)?lexical_cast<string>(thisGroupStats->pValue):"NA") << "\t"
-			<< ((testValid)?lexical_cast<string>((float)fdr):"NA") << "\t"
-			<< ((testValid)?lexical_cast<string>((float)thisGroupStats->stdDev):"NA") << "\t"
+			<< ((testValid)?lexical_cast<string>(fdr):"NA") << "\t"
+			<< ((testValid)?lexical_cast<string>(thisGroupStats->stdDev):"NA") << "\t"
 			<< thisGroupStats->chiSqr << "\t"
 			<< ((testValid)?(doHyper?lexical_cast<string>(pHyper(nDraws[groupsVsStr], mSuccesses[groupsVsStr], kSuccess[groupsVsStr], N)):""):"NA")<< "\t"	
 			<< endl;
@@ -1304,8 +1307,8 @@ void calculateAndWriteResultsAll(Graph &origNet,
 				<< thisGroupStats->expectedLinks << "\t" 
 				<< ((testValid)?lexical_cast<string>((float)thisGroupStats->zScore):"NA") << "\t"
 				<< ((testValid)?lexical_cast<string>(thisGroupStats->pValue):"NA") << "\t"
-				<< ((testValid)?lexical_cast<string>((float)fdr):"NA") << "\t"	
-				<< ((testValid)?lexical_cast<string>((float)thisGroupStats->stdDev):"NA") << "\t"
+				<< ((testValid)?lexical_cast<string>(fdr):"NA") << "\t"	
+				<< ((testValid)?lexical_cast<string>(thisGroupStats->stdDev):"NA") << "\t"
 				<< thisGroupStats->chiSqr << "\t"
 				<< ((testValid)?(doHyper?lexical_cast<string>(pHyper(nDraws[groupsVsStr], mSuccesses[groupsVsStr], kSuccess[groupsVsStr], N)):""):"NA")<< "\t"
 				<< endl;
